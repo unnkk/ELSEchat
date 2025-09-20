@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/messenger
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update   # для dev; в проде не использовать
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+server:
+  port: 9090
+  error:
+    include-mesasage: always
+
+logging:
+  level:
+    org.hibernate: INFO
+    org.flywaydb: INFO
+  file:
+    name: dbstatus.log
