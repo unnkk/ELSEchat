@@ -1,5 +1,6 @@
 package com.unnkk.elsechat.controllers;
 
+import com.unnkk.elsechat.DTOs.UserDTO;
 import com.unnkk.elsechat.entities.User;
 import com.unnkk.elsechat.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 

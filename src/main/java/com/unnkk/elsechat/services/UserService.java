@@ -1,5 +1,6 @@
 package com.unnkk.elsechat.services;
 
+import com.unnkk.elsechat.DTOs.UserDTO;
 import com.unnkk.elsechat.entities.User;
 import com.unnkk.elsechat.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,11 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers(){
+        return userRepository.findAll()
+                .stream()
+                .map(UserDTO::fromEntity)
+                .toList();
     }
 
     public void deleteUser(Long id){
