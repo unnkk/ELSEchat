@@ -26,6 +26,9 @@ and run using
 java -jar build/libs/elsechat-0.0.1-SHAPSHOT.jar
 ```
 
+Default port is 9090, but you can change it in ./src/main/resources/application.yml
+JWT generation secret can be set by creating environment variable JWT_SECRET(32 symbols min.) 
+
 # Endpoints
 
 * GET "/api/health" - returns the "up" status if the program is successfully booted.
