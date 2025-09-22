@@ -14,8 +14,8 @@ import java.util.Date;
 public class JWTUtil {
     @Value("${jwt.secret}")
     private String secret;
-
-    private long expiration = 1000L * 60 * 60 * 24 * 30;
+    @Value("${jwt.expiration}")
+    private long expiration;
 
     private Key getSigningKey(){
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
