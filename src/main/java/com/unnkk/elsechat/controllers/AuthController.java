@@ -1,10 +1,10 @@
 package com.unnkk.elsechat.controllers;
 
 import com.unnkk.elsechat.entities.User;
+import com.unnkk.elsechat.exceptions.UsernameAlreadyExistsException;
 import com.unnkk.elsechat.repositories.UserRepository;
 import com.unnkk.elsechat.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class AuthController {
         String displayName = map.get("displayName");
 
         if(userRepository.findByUsername(username).isPresent()){
-            return ResponseEntity.badRequest().body(Map.of("Status", "User already exists"));
+            throw new UsernameAlreadyExistsException(username);
         }
         User user =  new User();
         user.setUsername(username);
@@ -47,7 +47,7 @@ public class AuthController {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
         if(!passwordEncoder.matches(password, user.getPasswordHash())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UsernameNotFoundException(username);
         }
 
         String token = jwtUtil.genToken(username);
