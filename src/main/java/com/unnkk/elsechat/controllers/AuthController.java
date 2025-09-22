@@ -21,13 +21,13 @@ public class AuthController {
     private final JWTUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> map){
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody Map<String, String> map){
         String username = map.get("username");
         String password = map.get("password");
         String displayName = map.get("displayName");
 
         if(userRepository.findByUsername(username).isPresent()){
-            return ResponseEntity.badRequest().body("User already exists");
+            return ResponseEntity.badRequest().body(Map.of("Status", "User already exists"));
         }
         User user =  new User();
         user.setUsername(username);
@@ -35,7 +35,8 @@ public class AuthController {
         user.setDisplayName(displayName);
         userRepository.save(user);
 
-        return ResponseEntity.ok().body("User registered successfully. Token: " + jwtUtil.genToken(username));
+        return ResponseEntity.ok(Map.of("Status", "User registered successfully.",
+                "Token", jwtUtil.genToken(username)));
     }
 
     @PostMapping("/login")
