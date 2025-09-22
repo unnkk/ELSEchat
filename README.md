@@ -35,4 +35,23 @@ JWT generation secret can be set by creating environment variable JWT_SECRET(32 
 * GET "/api/users" - returns all users in the "users" table
 * GET "/api/users/{username}" - returns user with specified username
 * DELETE "/api/users/{id}" - deletes the user with specified id
-* POST "/api/auth/register" - creates
+* POST "/api/auth/register" - creates a user with specified credentials and returns status + JW token
+
+Body should match this one:
+```json
+{
+  "username": "String",
+  "password": "String",
+  "displayName": "String"
+}
+```
+
+* POST "/api/auth/login" - takes credentials, validates, and, if the user exists and the password is correct, returns token
+
+Body should match this one:
+```json
+{
+  "username": "String",
+  "password": "String"
+}
+```
