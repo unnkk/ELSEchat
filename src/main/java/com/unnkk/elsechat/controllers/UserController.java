@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -16,15 +15,6 @@ public class UserController {
 
     UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @PostMapping
-    public User createUser(@RequestBody Map<String, String> body) {
-        return userService.createUser(
-            body.get("username"),
-            body.get("password"),
-            body.get("displayName")
-        );
     }
 
     @GetMapping
