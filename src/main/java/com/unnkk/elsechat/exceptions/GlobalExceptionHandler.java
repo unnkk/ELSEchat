@@ -33,6 +33,16 @@ public class GlobalExceptionHandler {
                         "message", e.getMessage()));
     }
 
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<?> handleIncorrectPasswordException(IncorrectPasswordException e){
+        return  ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("timestamp", LocalDateTime.now(),
+                        "status", HttpStatus.UNAUTHORIZED.value(),
+                        "error", "Unauthorized",
+                        "message", e.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e){
         return ResponseEntity

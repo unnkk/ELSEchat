@@ -1,10 +1,13 @@
 package com.unnkk.elsechat.controllers;
 
 import com.unnkk.elsechat.entities.User;
+import com.unnkk.elsechat.exceptions.IncorrectPasswordException;
 import com.unnkk.elsechat.exceptions.UsernameAlreadyExistsException;
 import com.unnkk.elsechat.repositories.UserRepository;
+import com.unnkk.elsechat.services.UserService;
 import com.unnkk.elsechat.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
 
@@ -26,14 +29,10 @@ public class AuthController {
         String password = map.get("password");
         String displayName = map.get("displayName");
 
-        if(userRepository.findByUsername(username).isPresent()){
+        if(userService.getUserByUsername(username).isPresent()){
             throw new UsernameAlreadyExistsException(username);
         }
-        User user =  new User();
-        user.setUsername(username);
-        user.setPasswordHash(passwordEncoder.encode(password));
-        user.setDisplayName(displayName);
-        userRepository.save(user);
+        userService.createUser(username, passwordEncoder.encode(password), displayName);
 
         return ResponseEntity.ok(Map.of("Status", "User registered successfully.",
                 "Token", jwtUtil.genToken(username)));
@@ -44,10 +43,10 @@ public class AuthController {
         String username = map.get("username");
         String password = map.get("password");
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        User user = userService.getUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
         if(!passwordEncoder.matches(password, user.getPasswordHash())){
-            throw new UsernameNotFoundException(username);
+            throw new IncorrectPasswordException("Incorrect password.");
         }
 
         String token = jwtUtil.genToken(username);
