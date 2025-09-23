@@ -24,8 +24,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User createUser(User user){
+        return userRepository.save(user);
+    }
+
     public Optional<User> getUserByUsername(String username){
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> getUserById(Long id){
+        return userRepository.findById(id);
     }
 
     public List<UserDTO> getAllUsers(){
