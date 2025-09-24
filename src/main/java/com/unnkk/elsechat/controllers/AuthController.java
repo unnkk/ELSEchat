@@ -2,14 +2,12 @@ package com.unnkk.elsechat.controllers;
 
 import com.unnkk.elsechat.entities.User;
 import com.unnkk.elsechat.exceptions.IncorrectPasswordException;
+import com.unnkk.elsechat.exceptions.NotFoundException;
 import com.unnkk.elsechat.exceptions.UsernameAlreadyExistsException;
-import com.unnkk.elsechat.repositories.UserRepository;
 import com.unnkk.elsechat.services.UserService;
 import com.unnkk.elsechat.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +41,7 @@ public class AuthController {
         String username = map.get("username");
         String password = map.get("password");
 
-        User user = userService.getUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        User user = userService.getUserByUsername(username).orElseThrow(() -> new NotFoundException(username));
 
         if(!passwordEncoder.matches(password, user.getPasswordHash())){
             throw new IncorrectPasswordException("Incorrect password.");
