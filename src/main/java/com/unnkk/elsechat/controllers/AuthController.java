@@ -6,6 +6,7 @@ import com.unnkk.elsechat.exceptions.NotFoundException;
 import com.unnkk.elsechat.exceptions.UsernameAlreadyExistsException;
 import com.unnkk.elsechat.services.UserService;
 import com.unnkk.elsechat.utils.JWTUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,7 @@ public class AuthController {
         }
         userService.createUser(username, passwordEncoder.encode(password), displayName);
 
-        return ResponseEntity.ok(Map.of("Status", "User registered successfully.",
+        return ResponseEntity.ok(Map.of("Status", Integer.toString(HttpServletResponse.SC_CREATED),
                 "Token", jwtUtil.genToken(username)));
     }
 
@@ -48,6 +49,6 @@ public class AuthController {
         }
 
         String token = jwtUtil.genToken(username);
-        return ResponseEntity.ok(Map.of("token", token));
+        return ResponseEntity.ok(Map.of("status", Integer.toString(HttpServletResponse.SC_OK), "token", token));
     }
 }

@@ -7,6 +7,7 @@ import com.unnkk.elsechat.exceptions.NotFoundException;
 import com.unnkk.elsechat.services.PostService;
 import com.unnkk.elsechat.services.UserService;
 import com.unnkk.elsechat.utils.UserMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,8 @@ public class UserController {
     private final PostService postService;
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{username}")
@@ -47,6 +48,6 @@ public class UserController {
     @DeleteMapping("/me")
     public ResponseEntity<?> deleteUser() {
         userService.deleteCurrentUser();
-        return ResponseEntity.ok(Map.of("status", "success"));
+        return ResponseEntity.ok(Map.of("status", Integer.toString(HttpServletResponse.SC_NO_CONTENT)));
     }
 }
