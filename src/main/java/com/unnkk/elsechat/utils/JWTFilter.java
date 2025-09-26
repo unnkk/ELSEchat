@@ -1,7 +1,5 @@
 package com.unnkk.elsechat.utils;
 
-import com.unnkk.elsechat.entities.User;
-import com.unnkk.elsechat.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +16,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
-    private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
     @SuppressWarnings("NullableProblems")
@@ -30,7 +27,6 @@ public class JWTFilter extends OncePerRequestFilter {
             String username = jwtUtil.validateAndGetUsername(token);
 
             if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = userRepository.findByUsername(username).orElse(null);
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(username, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
