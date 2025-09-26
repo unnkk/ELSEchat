@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ELSEchat</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        #chat {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        #msgInput {
+            width: 70%;
+            padding: 5px;
+        }
+        #sendBtn {
+            padding: 6px 12px;
+        }
+        #tokenInput{
+            width: 70%;
+            padding: 5px;
+        }
+        #sendToken{
+            padding: 6px 12px;
+        }
+    </style>
+
+</head>
+<body>
+<H2>ELSEchat test</H2>
+
+<div id="chat"></div>
+<input type="text" id="msgInput" placeholder="Enter your message here. . .">
+<button id="sendBtn">Send</button>
+<input type="text" id="tokenInput" placeholder="Enter your token here">
+<button id="sendToken">Send</button>
+
+<script>
+    let token = null;
+    let stompClient = null;
+
+    if(localStorage.getItem("jwt") == null){
+        document.getElementById("msgInput").disabled = true;
+        document.getElementById("sendBtn").disabled = true;
+    }else{
+        document.getElementById("tokenInput").disabled = true;
+        document.getElementById("sendToken").disabled = true;
+        connect();
+    }
+
+    function connect(){
+        token = localStorage.getItem("jwt");
+        const socket = new SockJS('http://localhost:9090/ws/chat');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+            { Authorization: "Bearer " + token},
+            function (frame){
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/messages', function(message){
+                    const msg = JSON.parse(message.body);
+                    showMessage(`${msg.sender}: ${msg.content}`);
+                });
+            },
+            function (error){
+                console.error("STOMP error: " + error);
+            }
+        );
+    }
+
+    function sendMessage(){
+        const input = document.getElementById("msgInput");
+        const content = input.value.trim();
+
+        if(content && stompClient){
+            stompClient.send("/app/send",
+                { Authorization : "Bearer " + token},
+                JSON.stringify({
+                    content: content
+                }));
+            input.value = '';
+        }
+    }
+
+    function showMessage(message){
+        const chat = document.getElementById("chat");
+        const div = document.createElement("div");
+
+        div.textContent = message;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function setToken(){
+        const token = document.getElementById("tokenInput").value.trim();
+        if(token){
+            localStorage.setItem("jwt", token);
+            document.getElementById("sendBtn").disabled = false;
+            document.getElementById("msgInput").disabled = false;
+            document.getElementById("tokenInput").disabled = true;
+            document.getElementById("sendToken").disabled = true;
+
+            connect();
+        }
+    }
+
+    document.getElementById("sendToken").addEventListener('click', setToken);
+    document.getElementById("tokenInput").addEventListener('keypress', function(key){
+        if(key.key === 'Enter') setToken();
+    })
+
+    document.getElementById("sendBtn").addEventListener('click', sendMessage);
+    document.getElementById("msgInput").addEventListener('keypress', function(key){
+        if(key.key === 'Enter') sendMessage();
+    })
+</script>
+</body>
+</html>
