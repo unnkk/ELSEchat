@@ -33,20 +33,22 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String extractUsername(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public String validateAndGetUsername(String token){
+        String username;
+        if(!isTokenExpired(token)){
+            username = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        }else{
+            username = null;
+        }
+        return username;
     }
 
-    public boolean isTokenValid(String token, String username){
-        return username.equals(extractUsername(token)) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
